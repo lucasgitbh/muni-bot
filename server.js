@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import axios from "axios";
 import axiosRetry from "axios-retry";
-import sanRoque from "./data/sanroque.json" assert { type: "json" };
+import fs from "fs";
 
 const app = express();
 
@@ -16,12 +16,18 @@ axiosRetry(axios, {
   retryCondition: (error) => error.response?.status === 429
 });
 
+// 📦 CARGA SEGURA DEL JSON (FIX RAILWAY)
+const sanRoque = JSON.parse(
+  fs.readFileSync("./data/sanroque.json", "utf-8")
+);
+
+// 🏠 HOME
 app.get("/", (req, res) => {
   res.send("🤖 Muni Bot activo (San Roque).");
 });
 
 
-// 🧠 CONTEXTO DEL MUNICIPIO (datos reales)
+// 🧠 CONTEXTO DEL MUNICIPIO
 const contextoSanRoque = `
 SAN ROQUE - DATOS OFICIALES
 
@@ -45,7 +51,7 @@ ${sanRoque.gastronomia.map(r => `- ${r}`).join("\n")}
 `;
 
 
-// 📡 CHAT PRINCIPAL
+// 📡 CHAT
 app.post("/chat", async (req, res) => {
   const { message } = req.body;
 
@@ -81,7 +87,7 @@ REGLAS ESTRICTAS:
           }
         ],
 
-        temperature: 0.3 // 👈 reduce creatividad = menos inventos
+        temperature: 0.3
       },
       {
         headers: {
