@@ -9,27 +9,24 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// 🔁 Reintentos automáticos por rate limit
+/* 🔁 Reintentos automáticos */
 axiosRetry(axios, {
   retries: 3,
   retryDelay: (retryCount) => retryCount * 2000,
   retryCondition: (error) => error.response?.status === 429
 });
 
-
-// 📦 CARGA SEGURA DEL JSON (SIN assert → FIX RAILWAY)
+/* 📦 Cargar JSON local */
 const sanRoque = JSON.parse(
   fs.readFileSync("./data/sanroque.json", "utf-8")
 );
 
-
-// 🏠 ENDPOINT BASE
+/* 🏠 Health check */
 app.get("/", (req, res) => {
   res.send("🤖 Muni Bot activo (San Roque, Corrientes).");
 });
 
-
-// 🧠 CONTEXTO DEL MUNICIPIO
+/* 🧠 CONTEXTO LOCAL */
 const contextoSanRoque = `
 SAN ROQUE - DATOS OFICIALES
 
@@ -52,8 +49,7 @@ Gastronomía registrada:
 ${sanRoque.gastronomia.map(r => `- ${r}`).join("\n")}
 `;
 
-
-// 📡 CHAT PRINCIPAL
+/* 📡 CHAT PRINCIPAL */
 app.post("/chat", async (req, res) => {
   const { message } = req.body;
 
@@ -65,7 +61,8 @@ app.post("/chat", async (req, res) => {
     const response = await axios.post(
       "https://openrouter.ai/api/v1/chat/completions",
       {
-        model: "google/gemma-4-31b-it:free",
+        /* 🔥 CAMBIO IMPORTANTE */
+        model: "openrouter/free",
 
         messages: [
           {
@@ -77,10 +74,9 @@ Sos Muni Bot, asistente turístico oficial de San Roque, Corrientes.
 
 REGLAS ESTRICTAS:
 - Usá SOLO la información proporcionada.
-- No inventes lugares, eventos ni actividades.
-- Si no hay información, respondé: "No cuento con información oficial sobre eso."
-- No agregues datos externos.
-- Respondé claro, breve y útil.
+- No inventes datos.
+- Si no existe información, decí: "No cuento con información oficial sobre eso."
+- Sé claro, breve y útil.
             `
           },
           {
@@ -115,8 +111,7 @@ REGLAS ESTRICTAS:
   }
 });
 
-
-// 🚀 START SERVER
+/* 🚀 START SERVER */
 const PORT = process.env.PORT || 8080;
 
 app.listen(PORT, "0.0.0.0", () => {
