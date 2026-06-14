@@ -10,7 +10,7 @@ app.use(cors());
 app.use(express.json());
 
 /* --------------------------------------------------
-   🔁 RETRY AUTOMÁTICO (rate limit / errores API)
+   🔁 RETRY AUTOMÁTICO
 -------------------------------------------------- */
 axiosRetry(axios, {
   retries: 3,
@@ -21,7 +21,7 @@ axiosRetry(axios, {
 });
 
 /* --------------------------------------------------
-   📦 CARGA DE DATOS LOCALES (SIN assert - RAILWAY SAFE)
+   📦 CARGA JSON LOCAL
 -------------------------------------------------- */
 let sanRoque = {};
 
@@ -34,77 +34,65 @@ try {
 }
 
 /* --------------------------------------------------
-   🏠 HOME
+   🧠 CONTEXTO RAG (IMPORTANTE)
 -------------------------------------------------- */
-app.get("/", (req, res) => {
-  res.send("🤖 Muni Bot activo - San Roque Corrientes");
-});
-
-/* --------------------------------------------------
-   🧠 CONTEXTO DEL SISTEMA (RAG SIMPLE)
--------------------------------------------------- */
-content: `
+const contextoSanRoque = `
 Sos Muni Bot, asistente turístico oficial de San Roque, Corrientes, Argentina.
 
-Tu objetivo es brindar información útil, realista y consistente sobre:
-- Historia de San Roque
-- Lugares turísticos
-- Gastronomía local
-- Eventos y cultura
-- Ubicación y accesos
+DATOS REALES:
+- Fundación: ${sanRoque?.historia?.fundacion?.fecha || "1773"}
+- Lugar: ${sanRoque?.historia?.fundacion?.lugar || "San Roque"}
+- Provincia: ${sanRoque?.provincia || "Corrientes"}
+- País: ${sanRoque?.pais || "Argentina"}
+- Código postal: ${sanRoque?.servicios?.codigo_postal || "W3448"}
+- Distancia a Corrientes: ${sanRoque?.servicios?.distancia_a_corrientes_km || "135 km"}
 
-🔴 REGLAS ESTRICTAS:
-- Usá SOLO la información del contexto proporcionado por el sistema.
-- Si no hay información suficiente, NO digas "No cuento con información oficial".
-- En su lugar respondé de forma útil con conocimiento general turístico de la zona de San Roque, Corrientes.
-- Nunca digas que no tenés información de forma seca.
-- No inventes datos específicos (nombres exactos de negocios, horarios, teléfonos).
-- Mantené siempre tono de guía turístico amable.
+HITOS:
+${(sanRoque?.historia?.hitos || [])
+  .map(h => `- ${h.anio}: ${h.evento}`)
+  .join("\n")}
 
-🟡 ESTILO DE RESPUESTA:
-- Corto a medio (2 a 6 líneas)
-- Claro y natural
-- Sin repetir “no tengo información”
-- Siempre intenta ayudar
+GASTRONOMÍA:
+${(sanRoque?.gastronomia || []).map(g => `- ${g}`).join("\n")}
 
-🟢 EJEMPLOS:
-Usuario: donde comer
-Respuesta: En San Roque podés encontrar comedores familiares y parrillas locales, con comidas típicas correntinas como empanadas, asado y chipá. También hay pequeños restaurantes en el centro.
-
-Usuario: historia
-Respuesta: San Roque fue fundado en 1773 y es una de las localidades más antiguas de Corrientes. Su historia está ligada a la época colonial y al desarrollo rural de la región.
-
-Usuario: que hacer
-Respuesta: Podés recorrer la plaza central, la iglesia histórica y disfrutar de los caminos rurales y paisajes naturales típicos de la zona.
-
-📌 IMPORTANTE:
-Siempre respondé como guía turístico real de San Roque.
-`
+REGLAS:
+- Solo usar esta información como base
+- No inventar datos específicos
+- Responder como guía turístico
+- Respuestas cortas, claras y útiles
+`;
 
 /* --------------------------------------------------
-   🧠 FALLBACK LOCAL (si OpenRouter falla)
+   🧠 FALLBACK LOCAL (SIN IA)
 -------------------------------------------------- */
 function fallbackResponse(message) {
   const msg = message.toLowerCase();
 
-  if (msg.includes("comer")) {
-    return "En San Roque podés encontrar opciones gastronómicas en el centro y comedores locales.";
+  if (msg.includes("comer") || msg.includes("hambre")) {
+    return "En San Roque hay comedores familiares, parrillas y comida típica correntina como asado, empanadas y chipá.";
   }
 
-  if (msg.includes("fundación") || msg.includes("quien fundo")) {
+  if (msg.includes("fundación") || msg.includes("quién fundo")) {
     return "San Roque fue fundado en 1773 por Juan García de Cossio y Antonio de la Trinidad Martínez de Ibarra.";
   }
 
   if (msg.includes("lugares") || msg.includes("visitar")) {
-    return "Podés visitar la plaza central, la iglesia parroquial y zonas rurales del pueblo.";
+    return "Podés visitar la plaza central, la iglesia histórica y recorrer zonas rurales y naturales.";
   }
 
   if (msg.includes("banco")) {
     return "El banco se encuentra en la zona céntrica de San Roque.";
   }
 
-  return "San Roque es una localidad tranquila de Corrientes con historia, cultura y naturaleza.";
+  return "San Roque es una localidad de Corrientes con historia colonial, naturaleza y vida tranquila.";
 }
+
+/* --------------------------------------------------
+   🏠 HOME
+-------------------------------------------------- */
+app.get("/", (req, res) => {
+  res.send("🤖 Muni Bot activo - San Roque Corrientes");
+});
 
 /* --------------------------------------------------
    📡 CHAT PRINCIPAL
@@ -147,14 +135,14 @@ app.post("/chat", async (req, res) => {
       }
     );
 
-    const reply = response.data?.choices?.[0]?.message?.content;
+    const reply =
+      response.data?.choices?.[0]?.message?.content ||
+      fallbackResponse(message);
 
-    return res.json({
-      reply: reply || fallbackResponse(message)
-    });
+    return res.json({ reply });
 
   } catch (err) {
-    console.log("❌ OpenRouter falló, usando fallback");
+    console.log("❌ OpenRouter falló → fallback activo");
 
     return res.json({
       reply: fallbackResponse(message)
