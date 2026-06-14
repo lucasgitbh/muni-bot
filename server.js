@@ -9,24 +9,27 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-/* 🔁 Reintentos automáticos */
+/* 🔁 RETRY API */
 axiosRetry(axios, {
-  retries: 3,
-  retryDelay: (retryCount) => retryCount * 2000,
+  retries: 2,
+  retryDelay: (retryCount) => retryCount * 1500,
   retryCondition: (error) => error.response?.status === 429
 });
 
-/* 📦 Cargar JSON local */
+/* 📦 JSON LOCAL */
 const sanRoque = JSON.parse(
   fs.readFileSync("./data/sanroque.json", "utf-8")
 );
 
-/* 🏠 Health check */
+/* 🧠 CACHE SIMPLE EN MEMORIA */
+const cache = new Map();
+
+/* 🏠 HEALTH CHECK */
 app.get("/", (req, res) => {
-  res.send("🤖 Muni Bot activo (San Roque, Corrientes).");
+  res.send("🤖 Muni Bot PRO activo (San Roque)");
 });
 
-/* 🧠 CONTEXTO LOCAL */
+/* 🧠 CONTEXTO */
 const contextoSanRoque = `
 SAN ROQUE - DATOS OFICIALES
 
@@ -35,33 +38,43 @@ Historia:
 - Lugar: ${sanRoque.historia.fundacion.lugar}
 - Fundadores: ${sanRoque.historia.fundacion.fundadores.join(", ")}
 
-Hitos históricos:
+Hitos:
 ${sanRoque.historia.hitos.map(h => `- ${h.anio}: ${h.evento}`).join("\n")}
 
-Datos generales:
+Datos:
 - Provincia: ${sanRoque.provincia}
 - País: ${sanRoque.pais}
-- Distancia a Corrientes: ${sanRoque.servicios.distancia_a_corrientes_km} km
-- Código postal: ${sanRoque.servicios.codigo_postal}
-- Prefijo: ${sanRoque.servicios.prefijo}
+- Distancia Corrientes: ${sanRoque.servicios.distancia_a_corrientes_km} km
 
-Gastronomía registrada:
+Gastronomía:
 ${sanRoque.gastronomia.map(r => `- ${r}`).join("\n")}
 `;
 
-/* 📡 CHAT PRINCIPAL */
+/* 📡 CHAT */
 app.post("/chat", async (req, res) => {
   const { message } = req.body;
 
   if (!message) {
-    return res.status(400).json({ error: "El mensaje es obligatorio" });
+    return res.status(400).json({ error: "Mensaje requerido" });
   }
+
+  const key = message.toLowerCase().trim();
+
+  /* 🟢 1. CACHE HIT */
+  if (cache.has(key)) {
+    return res.json({
+      reply: cache.get(key),
+      cached: true
+    });
+  }
+
+  /* ⌛ SIMULAR "ESCRIBIENDO..." */
+  await new Promise(resolve => setTimeout(resolve, 1200));
 
   try {
     const response = await axios.post(
       "https://openrouter.ai/api/v1/chat/completions",
       {
-        /* 🔥 CAMBIO IMPORTANTE */
         model: "openrouter/free",
 
         messages: [
@@ -70,13 +83,12 @@ app.post("/chat", async (req, res) => {
             content: `
 ${contextoSanRoque}
 
-Sos Muni Bot, asistente turístico oficial de San Roque, Corrientes.
+Sos un guía turístico de San Roque.
 
-REGLAS ESTRICTAS:
-- Usá SOLO la información proporcionada.
-- No inventes datos.
-- Si no existe información, decí: "No cuento con información oficial sobre eso."
-- Sé claro, breve y útil.
+REGLAS:
+- Usá SOLO la info dada
+- No inventes
+- Si no sabés: "No cuento con información oficial"
             `
           },
           {
@@ -94,26 +106,37 @@ REGLAS ESTRICTAS:
           "HTTP-Referer": "https://muni-bot-production.up.railway.app",
           "X-Title": "Muni Bot San Roque"
         },
-        timeout: 15000
+        timeout: 12000
       }
     );
 
-    res.json({
-      reply: response.data.choices[0].message.content
-    });
+    const reply = response.data.choices[0].message.content;
+
+    /* 🟢 GUARDAR EN CACHE */
+    cache.set(key, reply);
+
+    return res.json({ reply });
 
   } catch (err) {
-    console.error("❌ Error en /chat:", err.response?.data || err.message);
+    console.error("❌ OpenRouter falló:", err.response?.data || err.message);
 
-    res.status(500).json({
-      error: "El bot está ocupado, intenta nuevamente."
+    /* 🔴 FALLBACK SIN IA (IMPORTANTE) */
+    const fallback = `
+📍 San Roque es una localidad de Corrientes, Argentina.
+Su historia se remonta a 1773 y es cabecera del departamento homónimo.
+Para más información, consultá la plaza central o la iglesia local.
+    `;
+
+    return res.json({
+      reply: fallback,
+      fallback: true
     });
   }
 });
 
-/* 🚀 START SERVER */
+/* 🚀 START */
 const PORT = process.env.PORT || 8080;
 
 app.listen(PORT, "0.0.0.0", () => {
-  console.log("🚀 Bot online en puerto " + PORT);
+  console.log("🚀 Muni Bot PRO online en puerto " + PORT);
 });
