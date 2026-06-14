@@ -9,21 +9,23 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// 🔁 Reintentos por rate limit
+// 🔁 Reintentos automáticos por rate limit
 axiosRetry(axios, {
   retries: 3,
   retryDelay: (retryCount) => retryCount * 2000,
   retryCondition: (error) => error.response?.status === 429
 });
 
-// 📦 CARGA SEGURA DEL JSON (FIX RAILWAY)
+
+// 📦 CARGA SEGURA DEL JSON (SIN assert → FIX RAILWAY)
 const sanRoque = JSON.parse(
   fs.readFileSync("./data/sanroque.json", "utf-8")
 );
 
-// 🏠 HOME
+
+// 🏠 ENDPOINT BASE
 app.get("/", (req, res) => {
-  res.send("🤖 Muni Bot activo (San Roque).");
+  res.send("🤖 Muni Bot activo (San Roque, Corrientes).");
 });
 
 
@@ -51,7 +53,7 @@ ${sanRoque.gastronomia.map(r => `- ${r}`).join("\n")}
 `;
 
 
-// 📡 CHAT
+// 📡 CHAT PRINCIPAL
 app.post("/chat", async (req, res) => {
   const { message } = req.body;
 
@@ -76,7 +78,7 @@ Sos Muni Bot, asistente turístico oficial de San Roque, Corrientes.
 REGLAS ESTRICTAS:
 - Usá SOLO la información proporcionada.
 - No inventes lugares, eventos ni actividades.
-- Si no hay información, decí: "No cuento con información oficial sobre eso."
+- Si no hay información, respondé: "No cuento con información oficial sobre eso."
 - No agregues datos externos.
 - Respondé claro, breve y útil.
             `
@@ -105,7 +107,7 @@ REGLAS ESTRICTAS:
     });
 
   } catch (err) {
-    console.error("❌ Error:", err.response?.data || err.message);
+    console.error("❌ Error en /chat:", err.response?.data || err.message);
 
     res.status(500).json({
       error: "El bot está ocupado, intenta nuevamente."
@@ -113,7 +115,10 @@ REGLAS ESTRICTAS:
   }
 });
 
+
+// 🚀 START SERVER
 const PORT = process.env.PORT || 8080;
+
 app.listen(PORT, "0.0.0.0", () => {
   console.log("🚀 Bot online en puerto " + PORT);
 });
