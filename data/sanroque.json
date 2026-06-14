@@ -1,0 +1,47 @@
+{
+  "ciudad": "San Roque",
+  "provincia": "Corrientes",
+  "pais": "Argentina",
+
+  "historia": {
+    "fundacion": {
+      "fecha": "11 de octubre de 1773",
+      "fundadores": [
+        "Juan García de Cossio",
+        "Antonio de la Trinidad Martínez de Ibarra"
+      ],
+      "lugar": "Paso San Blas, margen izquierda del río Santa Lucía"
+    },
+    "hitos": [
+      {
+        "anio": 1825,
+        "evento": "Elevado a Villa"
+      },
+      {
+        "anio": 1865,
+        "evento": "Capital provisoria de Corrientes"
+      },
+      {
+        "anio": 1867,
+        "evento": "Creación del municipio"
+      }
+    ]
+  },
+
+  "lugares": [],
+
+  "eventos": [],
+
+  "gastronomia": [
+    "Isidorito Restaurante",
+    "Comedor Don Pedro",
+    "Buffet La Terminal",
+    "Patio Cervecero"
+  ],
+
+  "servicios": {
+    "codigo_postal": "W3448",
+    "prefijo": "03777",
+    "distancia_a_corrientes_km": 135
+  }
+}
