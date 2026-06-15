@@ -9,102 +9,270 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-/* --------------------------------------------------
-   🔁 RETRY AUTOMÁTICO
--------------------------------------------------- */
 axiosRetry(axios, {
   retries: 3,
-  retryDelay: (retryCount) => retryCount * 1500,
+  retryDelay: (count) => count * 1500,
   retryCondition: (error) =>
     error.response?.status === 429 ||
     error.response?.status >= 500
 });
 
-/* --------------------------------------------------
-   📦 CARGA JSON LOCAL
--------------------------------------------------- */
+/* ----------------------------------
+   CARGAR JSON
+----------------------------------- */
+
 let sanRoque = {};
 
 try {
   sanRoque = JSON.parse(
-    fs.readFileSync("./data/sanroque.json", "utf-8")
+    fs.readFileSync("./data/sanroque.json", "utf8")
   );
+
+  console.log("✅ sanroque.json cargado");
 } catch (err) {
-  console.log("⚠️ No se pudo cargar sanroque.json");
+  console.error("❌ Error cargando JSON", err);
 }
 
-/* --------------------------------------------------
-   🧠 CONTEXTO RAG (IMPORTANTE)
--------------------------------------------------- */
-const contextoSanRoque = `
-Sos Muni Bot, asistente turístico oficial de San Roque, Corrientes, Argentina.
+/* ----------------------------------
+   HELPERS
+----------------------------------- */
 
-DATOS REALES:
-- Fundación: ${sanRoque?.historia?.fundacion?.fecha || "1773"}
-- Lugar: ${sanRoque?.historia?.fundacion?.lugar || "San Roque"}
-- Provincia: ${sanRoque?.provincia || "Corrientes"}
-- País: ${sanRoque?.pais || "Argentina"}
-- Código postal: ${sanRoque?.servicios?.codigo_postal || "W3448"}
-- Distancia a Corrientes: ${sanRoque?.servicios?.distancia_a_corrientes_km || "135 km"}
+function listaHospedajes() {
+  return sanRoque.hospedajes
+    .map(
+      h =>
+        `🏨 ${h.nombre}\n📞 ${
+          h.telefono || h.telefonos?.join(" / ")
+        }`
+    )
+    .join("\n\n");
+}
 
-HITOS:
-${(sanRoque?.historia?.hitos || [])
-  .map(h => `- ${h.anio}: ${h.evento}`)
-  .join("\n")}
+function listaGastronomia() {
+  return sanRoque.gastronomia
+    .map(
+      g =>
+        `🍽️ ${g.nombre}\n📞 ${g.whatsapp}\n🕒 ${g.horario}`
+    )
+    .join("\n\n");
+}
 
-GASTRONOMÍA:
-${(sanRoque?.gastronomia || []).map(g => `- ${g}`).join("\n")}
+function buscarHospedaje(nombre) {
+  return sanRoque.hospedajes.find(h =>
+    nombre.includes(h.nombre.toLowerCase())
+  );
+}
 
-REGLAS:
-- Solo usar esta información como base
-- No inventar datos específicos
-- Responder como guía turístico
-- Respuestas cortas, claras y útiles
+function buscarGastronomia(nombre) {
+  return sanRoque.gastronomia.find(g =>
+    nombre.includes(g.nombre.toLowerCase())
+  );
+}
+
+/* ----------------------------------
+   RESPUESTAS LOCALES
+----------------------------------- */
+
+function respuestaLocal(texto) {
+
+  const msg = texto.toLowerCase();
+
+  /* TODOS LOS HOSPEDAJES */
+
+  if (
+    msg.includes("hospedaje") ||
+    msg.includes("hotel") ||
+    msg.includes("alojamiento")
+  ) {
+    return `
+🏨 Hospedajes disponibles en San Roque:
+
+${listaHospedajes()}
 `;
-
-/* --------------------------------------------------
-   🧠 FALLBACK LOCAL (SIN IA)
--------------------------------------------------- */
-function fallbackResponse(message) {
-  const msg = message.toLowerCase();
-
-  if (msg.includes("comer") || msg.includes("hambre")) {
-    return "En San Roque hay comedores familiares, parrillas y comida típica correntina como asado, empanadas y chipá.";
   }
 
-  if (msg.includes("fundación") || msg.includes("quién fundo")) {
-    return "San Roque fue fundado en 1773 por Juan García de Cossio y Antonio de la Trinidad Martínez de Ibarra.";
+  /* TODOS LOS RESTAURANTES */
+
+  if (
+    msg.includes("comer") ||
+    msg.includes("restaurante") ||
+    msg.includes("gastronomia")
+  ) {
+    return `
+🍽️ Opciones gastronómicas:
+
+${listaGastronomia()}
+`;
   }
 
-  if (msg.includes("lugares") || msg.includes("visitar")) {
-    return "Podés visitar la plaza central, la iglesia histórica y recorrer zonas rurales y naturales.";
+  /* CELIACOS */
+
+  if (
+    msg.includes("celiaco") ||
+    msg.includes("sin tacc")
+  ) {
+
+    const lugares = sanRoque.gastronomia.filter(
+      g => g.celiacos
+    );
+
+    return `
+✅ Lugares con menú para celíacos:
+
+${lugares.map(g => "• " + g.nombre).join("\n")}
+`;
   }
 
-  if (msg.includes("banco")) {
-    return "El banco se encuentra en la zona céntrica de San Roque.";
+  /* MASCOTAS */
+
+  if (
+    msg.includes("mascota") ||
+    msg.includes("perro")
+  ) {
+
+    const lugares = sanRoque.gastronomia.filter(
+      g => g.mascotas
+    );
+
+    return `
+🐾 Lugares que aceptan mascotas:
+
+${lugares.map(g => "• " + g.nombre).join("\n")}
+`;
   }
 
-  return "San Roque es una localidad de Corrientes con historia colonial, naturaleza y vida tranquila.";
+  /* WIFI */
+
+  if (
+    msg.includes("wifi")
+  ) {
+
+    const lugares = sanRoque.hospedajes.filter(
+      h => h.wifi
+    );
+
+    return `
+📶 Hospedajes con WiFi:
+
+${lugares.map(h => "• " + h.nombre).join("\n")}
+`;
+  }
+
+  /* FUNDACION */
+
+  if (
+    msg.includes("fundacion") ||
+    msg.includes("fundó") ||
+    msg.includes("fundadores")
+  ) {
+
+    return `
+📜 San Roque fue fundado el
+${sanRoque.historia.fundacion.fecha}
+
+Fundadores:
+${sanRoque.historia.fundacion.fundadores.join(" y ")}
+`;
+  }
+
+  /* BUSCAR RESTAURANTE ESPECIFICO */
+
+  const resto = buscarGastronomia(msg);
+
+  if (resto) {
+    return `
+🍽️ ${resto.nombre}
+
+📞 ${resto.whatsapp || "-"}
+
+🕒 ${resto.horario || "-"}
+
+📍 ${resto.direccion || "Consultar"}
+
+${resto.celiacos ? "✅ Menú para celíacos\n" : ""}
+${resto.mascotas ? "🐾 Acepta mascotas\n" : ""}
+${resto.delivery ? "🛵 Delivery disponible\n" : ""}
+`;
+  }
+
+  /* BUSCAR HOSPEDAJE ESPECIFICO */
+
+  const hotel = buscarHospedaje(msg);
+
+  if (hotel) {
+
+    return `
+🏨 ${hotel.nombre}
+
+📞 ${
+      hotel.telefono ||
+      hotel.telefonos?.join(" / ")
+    }
+
+📍 ${hotel.direccion || hotel.ubicacion || "-"}
+
+${hotel.wifi ? "📶 WiFi\n" : ""}
+${hotel.cochera ? "🚗 Cochera\n" : ""}
+${hotel.desayuno ? "☕ Desayuno\n" : ""}
+${hotel.aire_acondicionado ? "❄️ Aire acondicionado\n" : ""}
+`;
+  }
+
+  return null;
 }
 
-/* --------------------------------------------------
-   🏠 HOME
--------------------------------------------------- */
+/* ----------------------------------
+   HOME
+----------------------------------- */
+
 app.get("/", (req, res) => {
-  res.send("🤖 Muni Bot activo - San Roque Corrientes");
+  res.send("🤖 Muni Bot activo");
 });
 
-/* --------------------------------------------------
-   📡 CHAT PRINCIPAL
--------------------------------------------------- */
+/* ----------------------------------
+   CHAT
+----------------------------------- */
+
 app.post("/chat", async (req, res) => {
+
   const { message } = req.body;
 
   if (!message) {
-    return res.status(400).json({ error: "Mensaje requerido" });
+    return res.status(400).json({
+      error: "Mensaje requerido"
+    });
   }
 
+  const local = respuestaLocal(message);
+
+  if (local) {
+    return res.json({
+      reply: local
+    });
+  }
+
+  const contexto = `
+Sos Muni Bot.
+
+Asistente turístico oficial de San Roque, Corrientes.
+
+Datos oficiales:
+
+Ciudad: ${sanRoque.ciudad}
+Provincia: ${sanRoque.provincia}
+País: ${sanRoque.pais}
+
+Fundación:
+${sanRoque.historia.fundacion.fecha}
+
+Fundadores:
+${sanRoque.historia.fundacion.fundadores.join(", ")}
+
+Respondé únicamente sobre San Roque.
+`;
+
   try {
+
     const response = await axios.post(
       "https://openrouter.ai/api/v1/chat/completions",
       {
@@ -113,7 +281,7 @@ app.post("/chat", async (req, res) => {
         messages: [
           {
             role: "system",
-            content: contextoSanRoque
+            content: contexto
           },
           {
             role: "user",
@@ -128,33 +296,39 @@ app.post("/chat", async (req, res) => {
         headers: {
           Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
           "Content-Type": "application/json",
-          "HTTP-Referer": "https://muni-bot-production.up.railway.app",
-          "X-Title": "Muni Bot San Roque"
-        },
-        timeout: 15000
+          "HTTP-Referer":
+            "https://muni-bot-production.up.railway.app",
+          "X-Title":
+            "Muni Bot San Roque"
+        }
       }
     );
 
     const reply =
-      response.data?.choices?.[0]?.message?.content ||
-      fallbackResponse(message);
+      response.data.choices?.[0]?.message?.content ||
+      "No encontré información.";
 
-    return res.json({ reply });
+    res.json({ reply });
 
-  } catch (err) {
-    console.log("❌ OpenRouter falló → fallback activo");
+  } catch (error) {
 
-    return res.json({
-      reply: fallbackResponse(message)
+    console.log("⚠️ OpenRouter no respondió");
+
+    res.json({
+      reply:
+        "No encontré información específica sobre esa consulta."
     });
   }
 });
 
-/* --------------------------------------------------
-   🚀 START SERVER
--------------------------------------------------- */
+/* ----------------------------------
+   START
+----------------------------------- */
+
 const PORT = process.env.PORT || 8080;
 
 app.listen(PORT, "0.0.0.0", () => {
-  console.log("🚀 Bot online en puerto " + PORT);
+  console.log(
+    `🚀 Muni Bot escuchando en puerto ${PORT}`
+  );
 });
