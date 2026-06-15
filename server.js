@@ -10,7 +10,7 @@ app.use(cors());
 app.use(express.json());
 
 /* ----------------------------------
-   RETRY
+   RETRY OPENROUTER
 ----------------------------------- */
 axiosRetry(axios, {
   retries: 3,
@@ -23,7 +23,6 @@ axiosRetry(axios, {
 /* ----------------------------------
    CARGA JSON
 ----------------------------------- */
-
 let sanRoque = {};
 
 try {
@@ -36,37 +35,43 @@ try {
 }
 
 /* ----------------------------------
-   HELPERS (100% CONTROLADOS POR JSON)
+   HELPERS LIMPIOS
 ----------------------------------- */
 
 const listarHospedajes = () =>
   sanRoque.hospedajes
-    .map(
-      h => `🏨 ${h.nombre}
+    .map(h => {
+      return (
+`🏨 ${h.nombre}
 📞 ${h.telefono || h.telefonos?.join(" / ") || "-"}
 📍 ${h.direccion || h.ubicacion || "-"}`
-    )
+      );
+    })
     .join("\n\n");
 
 const listarGastronomia = () =>
   sanRoque.gastronomia
-    .map(
-      g => `🍽️ ${g.nombre}
-📞 ${g.whatsapp}
-🕒 ${g.horario}`
-    )
+    .map(g => {
+      return (
+`🍽️ ${g.nombre}
+📞 ${g.whatsapp || "-"}
+🕒 ${g.horario || "-"}`
+      );
+    })
     .join("\n\n");
 
-function buscarEnLista(texto, lista) {
-  return lista.find(i =>
-    texto.includes(i.nombre.toLowerCase())
+/* ----------------------------------
+   BUSQUEDA REAL (ROBUSTA)
+----------------------------------- */
+function buscarItem(texto, lista) {
+  return lista.find(item =>
+    item.nombre?.toLowerCase().includes(texto)
   );
 }
 
 /* ----------------------------------
    RESPUESTA LOCAL (SIN IA)
 ----------------------------------- */
-
 function respuestaLocal(msgRaw) {
   const msg = msgRaw.toLowerCase();
 
@@ -80,13 +85,14 @@ function respuestaLocal(msgRaw) {
     return `🏨 Hospedajes en San Roque:\n\n${listarHospedajes()}`;
   }
 
-  /* 🍽️ COMER */
+  /* 🍽️ COMIDA */
   if (
     msg.includes("comer") ||
     msg.includes("restaurante") ||
-    msg.includes("gastronomia")
+    msg.includes("gastronomia") ||
+    msg.includes("comida")
   ) {
-    return `🍽️ Gastronomía:\n\n${listarGastronomia()}`;
+    return `🍽️ Gastronomía en San Roque:\n\n${listarGastronomia()}`;
   }
 
   /* 📜 FUNDACIÓN */
@@ -100,40 +106,37 @@ por ${sanRoque.historia.fundacion.fundadores.join(" y ")}`;
   }
 
   /* 🔍 RESTAURANTE ESPECÍFICO */
-  const resto = buscarEnLista(msg, sanRoque.gastronomia);
+  const resto = buscarItem(msg, sanRoque.gastronomia);
   if (resto) {
     return `🍽️ ${resto.nombre}
-📞 ${resto.whatsapp}
-🕒 ${resto.horario}
-📍 ${resto.direccion || "-"}`
+📞 ${resto.whatsapp || "-"}
+🕒 ${resto.horario || "-"}
+📍 ${resto.direccion || "-"}`;
   }
 
   /* 🔍 HOSPEDAJE ESPECÍFICO */
-  const hotel = buscarEnLista(msg, sanRoque.hospedajes);
+  const hotel = buscarItem(msg, sanRoque.hospedajes);
   if (hotel) {
     return `🏨 ${hotel.nombre}
-📞 ${hotel.telefono || hotel.telefonos?.join(" / ")}
-📍 ${hotel.direccion || hotel.ubicacion || "-"}`
+📞 ${hotel.telefono || hotel.telefonos?.join(" / ") || "-"}
+📍 ${hotel.direccion || hotel.ubicacion || "-"}`;
   }
 
   return null;
 }
 
 /* ----------------------------------
-   SYSTEM PROMPT (MUY ESTRICTO)
+   SYSTEM PROMPT (ANTI INVENTOS)
 ----------------------------------- */
-
 function buildContext() {
   return `
-SOS UN ASISTENTE TURÍSTICO OFICIAL DE SAN ROQUE.
+Sos un asistente turístico oficial de San Roque.
 
-REGLAS OBLIGATORIAS:
-- SOLO podés usar información del JSON provisto.
-- SI NO está en el JSON, respondé: "No tengo esa información".
-- NO inventes hoteles, restaurantes ni datos.
+REGLAS:
+- NO inventes información.
+- Si no está en el JSON: "No tengo esa información".
 - Respuestas cortas.
-
-DATOS:
+- Nada de markdown (*, **, etc).
 
 CIUDAD: ${sanRoque.ciudad}
 PROVINCIA: ${sanRoque.provincia}
@@ -160,30 +163,24 @@ app.post("/chat", async (req, res) => {
     return res.status(400).json({ error: "Mensaje requerido" });
   }
 
-  /* 1. SI EXISTE EN JSON → NO IA */
+  /* 1. RESPUESTA LOCAL (PRIORIDAD TOTAL) */
   const local = respuestaLocal(message);
   if (local) {
     return res.json({ reply: local });
   }
 
-  /* 2. IA SOLO COMO FALLBACK CONTROLADO */
+  /* 2. IA SOLO FALLBACK */
   try {
     const response = await axios.post(
       "https://openrouter.ai/api/v1/chat/completions",
       {
         model: "openrouter/free",
         messages: [
-          {
-            role: "system",
-            content: buildContext()
-          },
-          {
-            role: "user",
-            content: message
-          }
+          { role: "system", content: buildContext() },
+          { role: "user", content: message }
         ],
         temperature: 0.2,
-        max_tokens: 300
+        max_tokens: 250
       },
       {
         headers: {
@@ -202,7 +199,7 @@ app.post("/chat", async (req, res) => {
     res.json({ reply });
 
   } catch (err) {
-    console.log("⚠️ Error IA, fallback activo");
+    console.log("⚠️ IA falló");
 
     res.json({
       reply: "No tengo esa información en este momento."
