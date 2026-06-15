@@ -28,16 +28,217 @@
     ]
   },
 
-  "lugares": [],
+  "gastronomia": [
+    {
+      "nombre": "Comedor Ariana",
+      "whatsapp": "3777700082",
+      "horario": "10:30 a 16:00 / 19:00 a 00:00",
+      "menu": "Todos los menús",
+      "celiacos": true,
+      "wifi": true,
+      "bano": true,
+      "monitoreo": true,
+      "estacionamiento": true,
+      "mascotas": true,
+      "pagos": "Todos los medios"
+    },
+    {
+      "nombre": "Comedor Nancy",
+      "whatsapp": "3777674450",
+      "horario": "07:00 a 14:30 / 17:00 a 00:00",
+      "menu": "Todos los menús",
+      "celiacos": true,
+      "wifi": true,
+      "bano": true,
+      "mascotas": true,
+      "pagos": "Todos los medios"
+    },
+    {
+      "nombre": "Comidas Estela",
+      "whatsapp": "3777674962",
+      "direccion": "Santiago Baibiene 525",
+      "horario": "07:00 a 23:00",
+      "menu": "Desayuno, almuerzo y cena",
+      "celiacos": true,
+      "wifi": true,
+      "bano": true,
+      "ducha": true,
+      "mascotas": true,
+      "pagos": "Todos los medios"
+    },
+    {
+      "nombre": "Isidorito",
+      "whatsapp": "3777533524",
+      "instagram": "isidorito124",
+      "direccion": "Martínez de Ibarra 654",
+      "horario": "17:00 a 02:00",
+      "menu": "Pastas y comidas varias",
+      "celiacos": true,
+      "wifi": true,
+      "bano": true,
+      "calefaccion": true,
+      "mascotas": true,
+      "delivery": true,
+      "pagos": "Todos los medios"
+    },
+    {
+      "nombre": "El Tordito",
+      "whatsapp": "3777221199",
+      "direccion": "Plácido Martínez 308",
+      "horario": "18:00 a 00:00",
+      "menu": "Comidas elaboradas al mediodía",
+      "celiacos": false,
+      "wifi": true,
+      "bano": true,
+      "mascotas": true,
+      "delivery": true,
+      "pagos": "Todos los medios"
+    },
+    {
+      "nombre": "Costumbres Argentina",
+      "whatsapp": "3777672266",
+      "instagram": "costumbresmarket",
+      "direccion": "Juan García de Cossio 704",
+      "horario": "07:00 a 03:00 (lun-jue) / 07:00 a 05:00 (vie-dom)",
+      "menu": "Todos los menús",
+      "celiacos": true,
+      "wifi": true,
+      "bano": true,
+      "television": true,
+      "mascotas": true,
+      "delivery": true,
+      "pagos": "Todos los medios"
+    },
+    {
+      "nombre": "Buffet La Terminal",
+      "whatsapp": "3777391638",
+      "instagram": "bufetlaterminal",
+      "direccion": "Artaza y Berón de Astrada",
+      "horario": "09:00 a 14:00 / 19:00 a 00:30",
+      "menu": "Todos los menús",
+      "celiacos": false,
+      "wifi": true,
+      "bano": true,
+      "television": true,
+      "mascotas": false,
+      "delivery": true,
+      "delivery_con_cargo": true,
+      "pagos": "Todos los medios"
+    }
+  ],
+
+  "hospedajes": [
+    {
+      "nombre": "Leguiza Hotel",
+      "tipo": "Hotel",
+      "habitaciones": 9,
+      "ubicacion": "Céntrica",
+      "wifi": true,
+      "starlink": true,
+      "cochera": true,
+      "telefono": "3777206700",
+      "instagram": "leguiza.hotel",
+      "maps": "https://maps.app.goo.gl/xaFQVvjd4vF5djdR6"
+    },
+    {
+      "nombre": "Hospedaje JR",
+      "tipo": "Hospedaje",
+      "direccion": "Berón de Astrada 826",
+      "habitaciones": 4,
+      "wifi": true,
+      "aire_acondicionado": true,
+      "tv": true,
+      "bano_privado": true,
+      "cocina_compartida": true,
+      "estacionamiento": false,
+      "telefonos": [
+        "3777508296",
+        "3777470019"
+      ],
+      "maps": "https://maps.app.goo.gl/Awdbcg9Dn5qgLLRa8"
+    },
+    {
+      "nombre": "Hospedaje Fortune",
+      "tipo": "Apartamentos temporarios",
+      "habitaciones": 6,
+      "wifi": true,
+      "directv": true,
+      "desayuno": true,
+      "merienda": true,
+      "amenities": true,
+      "blanqueria": true,
+      "telefono": "3777221872",
+      "redes": "fortune apartamentos",
+      "maps": "https://maps.app.goo.gl/3EhKuh8LJSzvk89z7"
+    },
+    {
+      "nombre": "Hotel Esquivel",
+      "tipo": "Monoambiente",
+      "habitaciones": 3,
+      "capacidad_total": 9,
+      "wifi": true,
+      "aire_acondicionado": true,
+      "bano_privado": true,
+      "cochera": true,
+      "ropa_cama": true,
+      "toallon": true,
+      "telefono": "3777534039",
+      "facebook": "Juana Esquivel",
+      "maps": "https://maps.app.goo.gl/AF4hg6RbQJHYcEDC6"
+    },
+    {
+      "nombre": "Hospedaje Don Pedro",
+      "tipo": "Hospedaje",
+      "habitaciones": 4,
+      "wifi": true,
+      "aire_acondicionado": true,
+      "desayuno": true,
+      "almuerzo": true,
+      "estacionamiento": true,
+      "telefono": "3777302498"
+    },
+    {
+      "nombre": "Hospedaje Casa Blanca",
+      "tipo": "Departamentos amueblados",
+      "departamentos": 3,
+      "wifi": true,
+      "aire_acondicionado": true,
+      "cochera": true,
+      "ropa_cama": true,
+      "ropa_bano": true,
+      "telefono": "3777385281",
+      "maps": "https://maps.app.goo.gl/3Dnscik5Hz5bAz997"
+    },
+    {
+      "nombre": "Hospedaje San Martín",
+      "tipo": "Hospedaje",
+      "habitaciones": 7,
+      "telefono": "379498526",
+      "maps": "https://maps.app.goo.gl/aHbS1SKjyB42ckMXA"
+    },
+    {
+      "nombre": "Hotel Paraíso",
+      "tipo": "Hotel",
+      "habitaciones": 3,
+      "aire_acondicionado": true,
+      "tv": true,
+      "desayuno": true,
+      "telefono": "3795139474",
+      "maps": "https://maps.app.goo.gl/xdS8yyXqYySfMx2d6"
+    },
+    {
+      "nombre": "Hospedaje Ariana",
+      "tipo": "Hospedaje",
+      "wifi": true,
+      "aire_acondicionado": true,
+      "garage": true,
+      "monitoreo": true,
+      "telefono": "3777472472",
+      "maps": "https://maps.app.goo.gl/8kWCBdPZnNsF47KZ6"
+    }
+  ],
 
   "eventos": [],
-
-  "gastronomia": [
-    "Isidorito Restaurante",
-    "Comedor Don Pedro",
-    "Buffet La Terminal",
-    "Patio Cervecero"
-  ],
 
   "servicios": {
     "codigo_postal": "W3448",
