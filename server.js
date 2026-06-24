@@ -67,7 +67,7 @@ const listarGastronomia = () =>
 🕒 ${g.horario || "-"}<br>
 🍴 ${g.menu || ""}<br>
 
-<a href="https://wa.me/${telLimpio}" target="_blank">📲 WhatsApp</a>
+<a href="https://wa.me/${telLimpio}" target="_blank">📲 WhatsApp</a> |
 <a href="${g.maps}" target="_blank">🗺️ Ver en mapa</a>
 `;
     })
