@@ -37,6 +37,17 @@ try {
 /* ----------------------------------
    HELPERS LIMPIOS
 ----------------------------------- */
+const listarEventos = () =>
+  sanRoque.eventos
+    .map(e => {
+      return `
+🎉 <b>${e.nombre}</b><br>
+📅 ${e.fecha || "-"}<br>
+📍 ${e.lugar || "-"}<br>
+📝 ${e.descripcion || "-"}
+`;
+    })
+    .join("<br><br>");
 
 const listarHospedajes = () =>
   sanRoque.hospedajes
@@ -106,7 +117,15 @@ function respuestaLocal(msgRaw) {
   ) {
     return `🍽️ Gastronomía en San Roque:\n\n${listarGastronomia()}`;
   }
-
+/* 🎉 EVENTOS */
+if (
+  msg.includes("evento") ||
+  msg.includes("eventos") ||
+  msg.includes("fiesta") ||
+  msg.includes("agenda")
+) {
+  return `🎉 Eventos en San Roque:\n\n${listarEventos()}`;
+}
   /* 📜 FUNDACIÓN */
   if (
     msg.includes("fundacion") ||
