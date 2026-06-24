@@ -54,16 +54,23 @@ const listarHospedajes = () =>
 `;
     })
     .join("<br><br>");
+const listarGastronomia = () =>
   sanRoque.gastronomia
     .map(g => {
-      return (
-`🍽️ ${g.nombre}
-📞 ${g.whatsapp || "-"}
-🕒 ${g.horario || "-"}`
-      );
-    })
-    .join("\n\n");
+      const tel = g.whatsapp || "";
+      const telLimpio = tel.replace(/\D/g, "");
 
+      return `
+🍽️ <b>${g.nombre}</b><br>
+📞 ${tel || "-"}<br>
+📍 ${g.direccion || "-"}<br>
+🕒 ${g.horario || "-"}<br>
+🍴 ${g.menu || ""}<br>
+
+<a href="https://wa.me/${telLimpio}" target="_blank">📲 WhatsApp</a>
+`;
+    })
+    .join("<br><br>");
 /* ----------------------------------
    BUSQUEDA REAL (ROBUSTA)
 ----------------------------------- */
