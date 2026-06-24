@@ -41,15 +41,19 @@ try {
 const listarHospedajes = () =>
   sanRoque.hospedajes
     .map(h => {
-      return (
-`🏨 ${h.nombre}
-📞 ${h.telefono || h.telefonos?.join(" / ") || "-"}
-📍 ${h.direccion || h.ubicacion || "-"}`
-      );
-    })
-    .join("\n\n");
+      const tel = h.telefono || h.telefonos?.[0] || "";
+      const telLimpio = tel.replace(/\D/g, "");
 
-const listarGastronomia = () =>
+      return `
+🏨 <b>${h.nombre}</b><br>
+📞 ${tel || "-"}<br>
+📍 ${h.direccion || h.ubicacion || "-"}<br>
+
+<a href="https://wa.me/${telLimpio}" target="_blank">📲 WhatsApp</a> |
+<a href="${h.maps}" target="_blank">🗺️ Ver mapa</a>
+`;
+    })
+    .join("<br><br>");
   sanRoque.gastronomia
     .map(g => {
       return (
