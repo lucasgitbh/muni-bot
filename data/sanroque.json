@@ -128,116 +128,116 @@
   ],
 
   "hospedajes": [
-    {
-      "nombre": "Leguiza Hotel",
-      "tipo": "Hotel",
-      "habitaciones": 9,
-      "ubicacion": "Céntrica",
-      "wifi": true,
-      "starlink": true,
-      "cochera": true,
-      "telefono": "3777206700",
-      "instagram": "leguiza.hotel",
-      "maps": "https://maps.app.goo.gl/xaFQVvjd4vF5djdR6"
-    },
-    {
-      "nombre": "Hospedaje JR",
-      "tipo": "Hospedaje",
-      "direccion": "Berón de Astrada 826",
-      "habitaciones": 4,
-      "wifi": true,
-      "aire_acondicionado": true,
-      "tv": true,
-      "bano_privado": true,
-      "cocina_compartida": true,
-      "estacionamiento": false,
-      "telefonos": [
-        "3777508296",
-        "3777470019"
-      ],
-      "maps": "https://maps.app.goo.gl/Awdbcg9Dn5qgLLRa8"
-    },
-    {
-      "nombre": "Hospedaje Fortune",
-      "tipo": "Apartamentos temporarios",
-      "habitaciones": 6,
-      "wifi": true,
-      "directv": true,
-      "desayuno": true,
-      "merienda": true,
-      "amenities": true,
-      "blanqueria": true,
-      "telefono": "3777221872",
-      "redes": "fortune apartamentos",
-      "maps": "https://maps.app.goo.gl/3EhKuh8LJSzvk89z7"
-    },
-    {
-      "nombre": "Hotel Esquivel",
-      "tipo": "Monoambiente",
-      "habitaciones": 3,
-      "capacidad_total": 9,
-      "wifi": true,
-      "aire_acondicionado": true,
-      "bano_privado": true,
-      "cochera": true,
-      "ropa_cama": true,
-      "toallon": true,
-      "telefono": "3777534039",
-      "facebook": "Juana Esquivel",
-      "maps": "https://maps.app.goo.gl/AF4hg6RbQJHYcEDC6"
-    },
-    {
-      "nombre": "Hospedaje Don Pedro",
-      "tipo": "Hospedaje",
-      "habitaciones": 4,
-      "wifi": true,
-      "aire_acondicionado": true,
-      "desayuno": true,
-      "almuerzo": true,
-      "estacionamiento": true,
-      "telefono": "3777302498"
-    },
-    {
-      "nombre": "Hospedaje Casa Blanca",
-      "tipo": "Departamentos amueblados",
-      "departamentos": 3,
-      "wifi": true,
-      "aire_acondicionado": true,
-      "cochera": true,
-      "ropa_cama": true,
-      "ropa_bano": true,
-      "telefono": "3777385281",
-      "maps": "https://maps.app.goo.gl/3Dnscik5Hz5bAz997"
-    },
-    {
-      "nombre": "Hospedaje San Martín",
-      "tipo": "Hospedaje",
-      "habitaciones": 7,
-      "telefono": "379498526",
-      "maps": "https://maps.app.goo.gl/aHbS1SKjyB42ckMXA"
-    },
-    {
-      "nombre": "Hotel Paraíso",
-      "tipo": "Hotel",
-      "habitaciones": 3,
-      "aire_acondicionado": true,
-      "tv": true,
-      "desayuno": true,
-      "telefono": "3795139474",
-      "maps": "https://maps.app.goo.gl/xdS8yyXqYySfMx2d6"
-    },
-    {
-      "nombre": "Hospedaje Ariana",
-      "tipo": "Hospedaje",
-      "wifi": true,
-      "aire_acondicionado": true,
-      "garage": true,
-      "monitoreo": true,
-      "telefono": "3777472472",
-      "maps": "https://maps.app.goo.gl/8kWCBdPZnNsF47KZ6"
-    }
-  ],
-
+  {
+    "nombre": "Leguiza Hotel",
+    "tipo": "Hotel",
+    "habitaciones": 9,
+    "ubicacion": "Céntrica",
+    "wifi": true,
+    "starlink": true,
+    "cochera": true,
+    "telefono": "3777206700",
+    "instagram": "leguiza.hotel",
+    "maps": "https://www.google.com/maps/search/?api=1&query=-28.575300521351597,-58.70920008051223"
+  },
+  {
+    "nombre": "Hospedaje JR",
+    "tipo": "Hospedaje",
+    "direccion": "Berón de Astrada 826",
+    "habitaciones": 4,
+    "wifi": true,
+    "aire_acondicionado": true,
+    "tv": true,
+    "bano_privado": true,
+    "cocina_compartida": true,
+    "estacionamiento": false,
+    "telefonos": [
+      "3777508296",
+      "3777470019"
+    ],
+    "maps": "https://www.google.com/maps/search/?api=1&query=-28.576061747269698,-58.71319852758219"
+  },
+  {
+    "nombre": "Hospedaje Fortune",
+    "tipo": "Apartamentos temporarios",
+    "habitaciones": 6,
+    "wifi": true,
+    "directv": true,
+    "desayuno": true,
+    "merienda": true,
+    "amenities": true,
+    "blanqueria": true,
+    "telefono": "3777221872",
+    "redes": "fortune apartamentos",
+    "maps": "https://www.google.com/maps/search/?api=1&query=-28.578468780250127,-58.708530126293546"
+  },
+  {
+    "nombre": "Hotel Esquivel",
+    "tipo": "Monoambiente",
+    "habitaciones": 3,
+    "capacidad_total": 9,
+    "wifi": true,
+    "aire_acondicionado": true,
+    "bano_privado": true,
+    "cochera": true,
+    "ropa_cama": true,
+    "toallon": true,
+    "telefono": "3777534039",
+    "facebook": "Juana Esquivel",
+    "maps": "https://www.google.com/maps/search/?api=1&query=-28.575611076590405,-58.713215701059916"
+  },
+  {
+    "nombre": "Hospedaje Don Pedro",
+    "tipo": "Hospedaje",
+    "habitaciones": 4,
+    "wifi": true,
+    "aire_acondicionado": true,
+    "desayuno": true,
+    "almuerzo": true,
+    "estacionamiento": true,
+    "telefono": "3777302498",
+    "maps": "https://www.google.com/maps/search/?api=1&query=-28.57422893703547,-58.71116123101105"
+  },
+  {
+    "nombre": "Hospedaje Casa Blanca",
+    "tipo": "Departamentos amueblados",
+    "departamentos": 3,
+    "wifi": true,
+    "aire_acondicionado": true,
+    "cochera": true,
+    "ropa_cama": true,
+    "ropa_bano": true,
+    "telefono": "3777385281",
+    "maps": "https://www.google.com/maps/search/?api=1&query=-28.580635065078507,-58.717584582474416"
+  },
+  {
+    "nombre": "Hospedaje San Martín",
+    "tipo": "Hospedaje",
+    "habitaciones": 7,
+    "telefono": "379498526",
+    "maps": "https://www.google.com/maps/search/?api=1&query=-28.572751712767904,-58.708604735071184"
+  },
+  {
+    "nombre": "Hotel Paraíso",
+    "tipo": "Hotel",
+    "habitaciones": 3,
+    "aire_acondicionado": true,
+    "tv": true,
+    "desayuno": true,
+    "telefono": "3795139474",
+    "maps": "https://www.google.com/maps/search/?api=1&query=-28.57079910899212,-58.7111356269564"
+  },
+  {
+    "nombre": "Hospedaje Ariana",
+    "tipo": "Hospedaje",
+    "wifi": true,
+    "aire_acondicionado": true,
+    "garage": true,
+    "monitoreo": true,
+    "telefono": "3777472472",
+    "maps": "https://www.google.com/maps/search/?api=1&query=-28.580951486106294,-58.7215833345463"
+  }
+]
   "eventos": [],
 
   "servicios": {
