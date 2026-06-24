@@ -246,7 +246,29 @@
     }
   ],
 
-  "eventos": [],
+  "eventos": [
+  {
+    "nombre": "Fiesta del Chorizo Artesanal",
+    "fecha": "17 de junio",
+    "lugar": "Parque Municipal Costa del Sol",
+    "descripcion": "Feria gastronómica con concurso de chorizo artesanal, puestos de comida y música en vivo",
+    "tipo": "gastronomico"
+  },
+  {
+    "nombre": "Fiestas Patronales de San Roque",
+    "fecha": "16 de agosto",
+    "lugar": "Plaza Central",
+    "descripcion": "Celebración religiosa en honor al Santo Patrono San Roque",
+    "tipo": "religioso"
+  },
+  {
+    "nombre": "Aniversario de Fundación",
+    "fecha": "11 de octubre",
+    "lugar": "Ciudad de San Roque",
+    "descripcion": "Actos oficiales por la fundación de la ciudad (1773)",
+    "tipo": "historico"
+  }
+],
 
   "servicios": {
     "codigo_postal": "W3448",
